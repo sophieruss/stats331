@@ -2,6 +2,7 @@
 title: "main"
 format: html
 editor: visual
+author: "sophie"
 ---
 
 ## Quarto
