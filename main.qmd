@@ -2,7 +2,7 @@
 title: "main"
 format: html
 editor: visual
-author: "sophie and ellexis"
+author: "sophie and ellexis Emma"
 ---
 
 ## Quarto
