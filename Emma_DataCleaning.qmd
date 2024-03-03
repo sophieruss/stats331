@@ -33,7 +33,10 @@ summary(children_long)
 head(gdp)
 
 gdp_long <- gdp |>
-  mutate(across(c("1800":"2100"), ~as.numeric(str_replace_all(.x, "k", ""))))|>
+  mutate(across(c("1800":"2100"), 
+                ~ifelse(str_detect(.x, "k"), 
+                        as.numeric(str_replace_all(.x, "k", ""))*1000,
+                        as.numeric(.x)))) |>
   pivot_longer(cols = c("1800":"2100"),
                names_to = "year",
                values_to = "gdp") |>
@@ -43,6 +46,7 @@ gdp_long <- gdp |>
 
 summary(gdp_long)
 ```
+
 ## Combining Data
 ```{r}
 child_gdp <- gdp_long |>
