@@ -1,0 +1,57 @@
+---
+title: "Emma_DataCleaning"
+author: "Emma"
+format: html
+editor: source
+---
+
+## Read in Data + Load Libraries
+```{r}
+library(tidyverse)
+children <- read_csv("children.csv")
+gdp <- read_csv("gdp.csv")
+```
+## Cleaning Data
+
+# Children
+```{r}
+head(children)
+
+children_long <- children |>
+  pivot_longer(cols = c("1800":"2100"),
+               names_to = "year",
+               values_to = "children") |>
+  filter(year < 2025) |>
+  mutate(year = as.numeric(year)) |>
+  drop_na()
+
+summary(children_long)
+```
+
+# Gdp
+```{r}
+head(gdp)
+
+gdp_long <- gdp |>
+  mutate(across(c("1800":"2100"), ~as.numeric(str_replace_all(.x, "k", ""))))|>
+  pivot_longer(cols = c("1800":"2100"),
+               names_to = "year",
+               values_to = "gdp") |>
+  filter(year < 2025) |>
+  mutate(year = as.numeric(year)) |>
+  drop_na()
+
+summary(gdp_long)
+```
+## Combining Data
+```{r}
+child_gdp <- gdp_long |>
+  inner_join(children_long)
+
+head(child_gdp)
+
+child_gdp |>
+  group_by(country)|>
+  summarise(avg_child = mean(children), avg_gdp = mean(gdp))
+```
+
