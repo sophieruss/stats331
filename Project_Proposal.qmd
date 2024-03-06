@@ -1,0 +1,87 @@
+---
+title: "STAT 331 Project Proposal"
+author: "Ellexis Monsanto, Sophie Russ, Emma Siskens"
+format: 
+  html:
+    self-contained: true
+    code-tools: true
+    toc: true
+editor: source
+execute: 
+  error: true
+  echo: true
+  message: false
+  warning: false
+---
+
+## Read in Data + Load Libraries
+
+```{r}
+library(tidyverse)
+fertility <- read_csv("children.csv")
+gdp <- read_csv("gdp.csv")
+```
+
+## Describing Data
+
+We are interested in exploring the relationship between the two variables “GDP per capita” and “Total Fertility Rate”. We retrieved datasets on these two variables from Gapminder.org.
+
+The dataset `gdp.csv` contains the gross domestic product (GDP) per person (capita) for 195 countries from 1800 to 2100, with each year a column (variable) and each country a row (observation). GDP per capita “measures the value of everything produced in a country during a year, divided by the number of people” (Gapminder). The unit is international dollars, fixed to 2017 prices adjusted for inflation and differences in cost of living, known as PPP dollars. Although flawed, GDP per capita is often used as a core indicator of a country’s economic performance and average living standards. Gapminder’s dataset has predicted data up to 2100 [using forecasts and predictive modeling](https://www.gapminder.org/data/documentation/gd001/). However, for the scope of our project, we will focus on data up to 2024.
+
+The dataset `children.csv` contains the number of babies per woman (Total Fertility Rate) for 202 countries from 1800 to 2100, with each year a column (variable) and each country a row (observation). Total Fertility Rate is “the number of children that would be born to each woman with prevailing age-specific fertility rates” (Gapminder). Gapminder’s dataset uses estimates from the UN for most of its data and has predicted data up to 2100 using the UN projection of future fertility rate in all countries. However, for the scope of our project, we will focus on data up to 2024.
+
+We hypothesize that there will be a **negative** association between GDP per capita and Total Fertility Rate. Through internet research, we found that, in general, poor countries tend to have higher levels of fertility than rich countries ([Vandenbroucke](https://www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income)). We are interested in exploring and confirming (or refuting) this relationship in general and over time with the time series data that we have.
+
+To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all NA values in both datasets. Then, we merged both datasets using an inner_join() to only contain observations that have values for both gdp and fertility.
+
+Our final cleaned and merged dataset `fertility_gdp` has 4 variables: country (character), year (numeric), gdp (numeric), and fertility (numeric). It contains data on 186 countries in total.
+
+## Cleaning Data
+
+### Cleaning `fertility.csv`
+
+```{r}
+#| code-fold: TRUE
+fertility_long <- fertility |>
+  pivot_longer(cols = c("1800":"2100"),
+               names_to = "year",
+               values_to = "fertility") |>
+  mutate(year = as.numeric(year)) |>
+  filter(year < 2025) |>
+  drop_na()
+
+summary(fertility_long)
+```
+
+### Cleaning `gdp.csv`
+
+```{r}
+#| code-fold: TRUE
+gdp_long <- gdp |>
+  mutate(across(c("1800":"2100"), 
+                ~ifelse(str_detect(.x, "k"), 
+                        as.numeric(str_replace_all(.x, "k", ""))*1000,
+                        as.numeric(.x)))) |>
+  pivot_longer(cols = c("1800":"2100"),
+               names_to = "year",
+               values_to = "gdp") |>
+  mutate(year = as.numeric(year)) |>
+  filter(year < 2025) |>
+  drop_na()
+
+summary(gdp_long)
+```
+
+### Combining both datasets
+
+```{r}
+#| code-fold: TRUE
+fertility_gdp <- gdp_long |>
+  inner_join(fertility_long)
+
+head(fertility_gdp)
+
+fertility_gdp |>
+  group_by(country)|>
+  summarise(avg_fertility = mean(fertility), avg_gdp = mean(gdp))
+```
