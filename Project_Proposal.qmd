@@ -18,6 +18,7 @@ execute:
 
 ```{r}
 library(tidyverse)
+library(broom)
 fertility <- read_csv("children.csv")
 gdp <- read_csv("gdp.csv")
 ```
@@ -81,7 +82,43 @@ fertility_gdp <- gdp_long |>
 
 head(fertility_gdp)
 
-fertility_gdp |>
-  group_by(country)|>
-  summarise(avg_fertility = mean(fertility), avg_gdp = mean(gdp))
 ```
+
+## 2 Linear Regression
+
+## 2.1 Data Visualization
+
+The relationship between the gdp and fertility:
+
+```{r}
+avg_fertility_gdp <- fertility_gdp |>
+  group_by(country)|>
+  summarise(avg_fertility = mean(fertility), avg_gdp = mean(gdp)) 
+  
+ggplot(aes(x = avg_gdp,
+             y = avg_fertility),
+       data = avg_fertility_gdp) +
+  geom_point()
+  
+```
+
+## 2.2 Linear Regression
+
+```{r}
+model <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
+tidy(model)
+```
+
+$\hat{Average Fertility}=5.9839-0.00012(AverageGDP)$
+
+Coefficient Interpretations:
+
+-   Intercept = 5.9839
+
+    -   When the country's average GDP over the years 1800 to 2024 is equal to zero, the country's estimated average fertility rate is 5.9839 babies per woman.
+
+-   AverageGDP = -0.00012
+
+    -   For every \$1 (in PPP 2017 dollars) increase in country's average GDP, the country's estimated average fertility rate is estimated to decrease by 0.00012 babies per woman.
+
+    -   Equivalently, for every \$10,000 (in PPP 2017 dollars) increase in country's average GDP the country's estimated average fertility rate is estimated to decrease by 1.2 babies per woman.
