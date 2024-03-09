@@ -88,8 +88,10 @@ head(fertility_gdp)
 
 ## 2.1 Data Visualization
 
-The relationship between gdp over time and fertility over time (normalized)
+We will begin by investigating visualization of data on Gross Domestic Product and Fertility rate. Firstly, we investigate the relationship of Gross Domestic Product over time and Fertility rate over time. We average GDP and fertility across all countries per year, to get a single value for average GDP and average Fertility Rate for every year. We also normalize the values of GDP and fertility rate, so that we can compare the two variables with each other, in the following graphic.
+
 ```{r}
+#| code-fold: true
 avg_fertility_gdp <-fertility_gdp |>
   #filter(country == "USA") |> #keep this line to see the USA (baby-boom)
   group_by(year) |>
@@ -100,14 +102,19 @@ avg_fertility_gdp <-fertility_gdp |>
 
 ggplot(avg_fertility_gdp, aes(x = year)) +
   geom_line(aes(y = gdp_normalized, color = "GDP"), linetype="dashed") +
-  geom_line(aes(y = fertility_normalized, color = "Fertility"))
+  geom_line(aes(y = fertility_normalized, color = "Fertility"))+
+  labs(title = "Normalized average Fertility Rate and GDP over Time",
+      y=NULL,
+      x = "Year",
+      color="Variable")
 
 ```
+As we can see from the visualization, from 1800 to the roughly mid-1920s, GDP and Fertility rate were fairly stable, with Fertility Rate being higher than GDP. Around 1925, the fertility rate started to drop, with a steep decline in the 1960s, and a consistent decrease since then. As for GDP, it also started to rise around the 1920s and almost exponentially increased around the 1950s. The two variables seem to be inversely related over time; as Fertility Rate falls, GDP increases.
 
-
-The relationship between the gdp and fertility:
+Next, we visualize the relationship of the two variables between each other. Here, we average the GDP and Fertility rate across time, to get a single value for average GDP and average Fertility Rate for each country in our dataset.
 
 ```{r}
+#| code-fold: true
 avg_fertility_gdp <- fertility_gdp |>
   group_by(country)|>
   summarise(avg_fertility = mean(fertility), avg_gdp = mean(gdp)) 
@@ -115,13 +122,23 @@ avg_fertility_gdp <- fertility_gdp |>
 ggplot(aes(x = avg_gdp,
              y = avg_fertility),
        data = avg_fertility_gdp) +
-  geom_point()
+  geom_point()+
+  labs(title = "Average Fertility Rate vs Average GDP per country",
+       subtitle = "Average Fertility Rate per Country",
+       y = NULL,
+       x = "Average GDP per Country")
   
 ```
+In this graph, we can see that as average GDP increases, the average Fertility rate tends to decrease. We can also see that the majority of the countries have an average GDP under 10,000 and an average fertility rate above 4. There seems to be an evident negative relationship. However there may be some curvature indicating a negative exponential form. Additionally, the relationship is not very strong as the data points at increased average GDP values are more spread out.
 
 ## 2.2 Linear Regression
 
+In this exploration, we applied a simple linear regression to the model. Simple Linear regression assumes a linear relationship between the variables, GDP and Fertility rate, as well as normally distributed errors, with a mean of 0. 
+
+The estimated regression model is as follows:
+
 ```{r}
+#| code-fold: true
 model <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
 tidy(model)
 ```
@@ -139,3 +156,11 @@ Coefficient Interpretations:
     -   For every \$1 (in PPP 2017 dollars) increase in country's average GDP, the country's estimated average fertility rate is estimated to decrease by 0.00012 babies per woman.
 
     -   Equivalently, for every \$10,000 (in PPP 2017 dollars) increase in country's average GDP the country's estimated average fertility rate is estimated to decrease by 1.2 babies per woman.
+    
+As for assessing the fit of our model, we can refer to the following table:
+
+```{r}
+#| code-fold: true
+broom::glance(model)
+```
+From this table, we can see our model has an R-squared of 0.351. This means that GDP explains 35.1% of variation in Fertility Rate. This may not seem like very much, but considering how many factors influence Fertility Rate in generally, being able to explain 35% of that is relatively good.
