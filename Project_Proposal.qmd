@@ -164,3 +164,10 @@ As for assessing the fit of our model, we can refer to the following table:
 broom::glance(model)
 ```
 From this table, we can see our model has an R-squared of 0.351. This means that GDP explains 35.1% of variation in Fertility Rate. This may not seem like very much, but considering how many factors influence Fertility Rate in generally, being able to explain 35% of that is relatively good.
+
+We can also refer to the model summary:
+```{r}
+#| code-fold: true
+summary(model)
+```
+Here we can see that the Root mean squared error is 0.877. This means that the typical prediction error is 0.877. The predicted fertility rate will vary by 0.877 on average. 
