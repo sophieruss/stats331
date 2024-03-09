@@ -88,6 +88,23 @@ head(fertility_gdp)
 
 ## 2.1 Data Visualization
 
+The relationship between gdp over time and fertility over time (normalized)
+```{r}
+avg_fertility_gdp <-fertility_gdp |>
+  #filter(country == "USA") |> #keep this line to see the USA (baby-boom)
+  group_by(year) |>
+  summarize(mean_gdp = mean(gdp), 
+            mean_fertility = mean(fertility)) |>
+  mutate(gdp_normalized = scale(mean_gdp),
+         fertility_normalized = scale(mean_fertility))
+
+ggplot(avg_fertility_gdp, aes(x = year)) +
+  geom_line(aes(y = gdp_normalized, color = "GDP"), linetype="dashed") +
+  geom_line(aes(y = fertility_normalized, color = "Fertility"))
+
+```
+
+
 The relationship between the gdp and fertility:
 
 ```{r}
