@@ -1,0 +1,189 @@
+---
+title: "STAT 331 Project Proposal"
+author: "Ellexis Monsanto, Sophie Russ, Emma Siskens"
+format: 
+  html:
+    self-contained: true
+    code-tools: true
+    toc: true
+editor: source
+execute: 
+  error: true
+  echo: true
+  message: false
+  warning: false
+---
+
+## Read in Data + Load Libraries
+
+```{r}
+library(tidyverse)
+library(broom)
+library(knitr)
+library(kableExtra)
+fertility <- read_csv("children.csv")
+gdp <- read_csv("gdp.csv")
+```
+
+## Describing Data
+
+We are interested in exploring the relationship between the two variables “GDP per capita” and “Total Fertility Rate”. We retrieved datasets on these two variables from Gapminder.org.
+
+The dataset `gdp.csv` contains the gross domestic product (GDP) per person (capita) for 195 countries from 1800 to 2100, with each year a column (variable) and each country a row (observation). GDP per capita “measures the value of everything produced in a country during a year, divided by the number of people” (Gapminder). The unit is international dollars, fixed to 2017 prices adjusted for inflation and differences in cost of living, known as PPP dollars. Although flawed, GDP per capita is often used as a core indicator of a country’s economic performance and average living standards. Gapminder’s dataset has predicted data up to 2100 [using forecasts and predictive modeling](https://www.gapminder.org/data/documentation/gd001/). However, for the scope of our project, we will focus on data up to 2024.
+
+The dataset `children.csv` contains the number of babies per woman (Total Fertility Rate) for 202 countries from 1800 to 2100, with each year a column (variable) and each country a row (observation). Total Fertility Rate is “the number of children that would be born to each woman with prevailing age-specific fertility rates” (Gapminder). Gapminder’s dataset uses estimates from the UN for most of its data and has predicted data up to 2100 using the UN projection of future fertility rate in all countries. However, for the scope of our project, we will focus on data up to 2024.
+
+We hypothesize that there will be a **negative** association between GDP per capita and Total Fertility Rate. Through internet research, we found that, in general, poor countries tend to have higher levels of fertility than rich countries ([Vandenbroucke](https://www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income)). We are interested in exploring and confirming (or refuting) this relationship in general and over time with the time series data that we have.
+
+To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all NA values in both datasets. Then, we merged both datasets using an inner_join() to only contain observations that have values for both gdp and fertility.
+
+Our final cleaned and merged dataset `fertility_gdp` has 4 variables: country (character), year (numeric), gdp (numeric), and fertility (numeric). It contains data on 186 countries in total.
+
+## Cleaning Data
+
+### Cleaning `fertility.csv`
+
+```{r}
+#| code-fold: TRUE
+fertility_long <- fertility |>
+  pivot_longer(cols = c("1800":"2100"),
+               names_to = "year",
+               values_to = "fertility") |>
+  mutate(year = as.numeric(year)) |>
+  filter(year < 2025) |>
+  drop_na()
+
+summary(fertility_long)
+```
+
+### Cleaning `gdp.csv`
+
+```{r}
+#| code-fold: TRUE
+gdp_long <- gdp |>
+  mutate(across(c("1800":"2100"), 
+                ~ifelse(str_detect(.x, "k"), 
+                        as.numeric(str_replace_all(.x, "k", ""))*1000,
+                        as.numeric(.x)))) |>
+  pivot_longer(cols = c("1800":"2100"),
+               names_to = "year",
+               values_to = "gdp") |>
+  mutate(year = as.numeric(year)) |>
+  filter(year < 2025) |>
+  drop_na()
+
+summary(gdp_long)
+```
+
+### Combining both datasets
+
+```{r}
+#| code-fold: TRUE
+fertility_gdp <- gdp_long |>
+  inner_join(fertility_long)
+
+head(fertility_gdp)
+
+```
+
+## 2 Linear Regression
+
+## 2.1 Data Visualization
+
+We will begin by investigating visualization of data on Gross Domestic Product and Fertility rate. Firstly, we investigated the relationship of Gross Domestic Product over time and Fertility rate over time. We average GDP and fertility across all countries per year, to get a single value for average GDP and average Fertility Rate for every year. We also normalize the values of GDP and fertility rate, so that we can compare the two variables with each other, in the following graphic.
+
+```{r}
+#| code-fold: true
+avg_fertility_gdp <-fertility_gdp |>
+  #filter(country == "USA") |> #keep this line to see the USA (baby-boom)
+  group_by(year) |>
+  summarize(mean_gdp = mean(gdp), 
+            mean_fertility = mean(fertility)) |>
+  mutate(gdp_normalized = scale(mean_gdp),
+         fertility_normalized = scale(mean_fertility))
+
+ggplot(avg_fertility_gdp, aes(x = year)) +
+  geom_line(aes(y = gdp_normalized, color = "GDP"), linetype="dashed") +
+  geom_line(aes(y = fertility_normalized, color = "Fertility"))+
+  labs(title = "Normalized average Fertility Rate and GDP over Time",
+      y=NULL,
+      x = "Year",
+      color="Variable")
+
+```
+As we can see from the visualization, from 1800 to the roughly mid-1920s, GDP and Fertility rate were fairly stable, with Fertility Rate being higher than GDP. Around 1925, the fertility rate started to drop, with a steep decline in the 1960s, and a consistent decrease since then. As for GDP, it also started to rise around the 1920s and almost exponentially increased around the 1950s. The two variables seem to be inversely related over time; as Fertility Rate falls, GDP increases.
+
+Next, we visualize the relationship of the two variables between each other. Here, we average the GDP and Fertility rate across time, to get a single value for average GDP and average Fertility Rate for each country in our dataset.
+
+```{r}
+#| code-fold: true
+avg_fertility_gdp <- fertility_gdp |>
+  group_by(country)|>
+  summarise(avg_fertility = mean(fertility), avg_gdp = mean(gdp)) 
+  
+ggplot(aes(x = avg_gdp,
+             y = avg_fertility),
+       data = avg_fertility_gdp) +
+  geom_point()+
+  labs(title = "Average Fertility Rate vs Average GDP per country",
+       subtitle = "Average Fertility Rate per Country",
+       y = NULL,
+       x = "Average GDP per Country")
+  
+```
+In this graph, we can see that as average GDP increases, the average Fertility rate tends to decrease. We can also see that the majority of the countries have an average GDP under 10,000 and an average fertility rate above 4. There seems to be an evident negative relationship. However there may be some curvature indicating a negative exponential form. Additionally, the relationship is not very strong as the data points at increased average GDP values are more spread out.
+
+## 2.2 Linear Regression
+
+In this exploration, we applied a simple linear regression to the model. Simple Linear regression assumes a linear relationship between the variables, GDP and Fertility rate, as well as normally distributed errors, with a mean of 0. 
+
+The estimated regression model is as follows:
+
+```{r}
+#| code-fold: true
+model <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
+tidy(model)
+```
+
+$\hat{Average Fertility}=5.9839-0.00012(AverageGDP)$
+
+Coefficient Interpretations:
+
+-   Intercept = 5.9839
+
+    -   When the country's average GDP over the years 1800 to 2024 is equal to zero, the country's estimated average fertility rate is 5.9839 babies per woman.
+
+-   AverageGDP = -0.00012
+
+    -   For every \$1 (in PPP 2017 dollars) increase in country's average GDP, the country's estimated average fertility rate is estimated to decrease by 0.00012 babies per woman.
+
+    -   Equivalently, for every \$10,000 (in PPP 2017 dollars) increase in country's average GDP the country's estimated average fertility rate is estimated to decrease by 1.2 babies per woman.
+    
+As for assessing the fit of our model, we can refer to the following table:
+
+```{r}
+
+variances <- data.frame(
+  response_variance = var(avg_fertility_gdp$avg_fertility),
+  fitted_variance = var(model$fitted.values),
+  residual_variance = var(model$residuals)
+)
+
+variances
+```
+
+
+```{r}
+#| code-fold: true
+broom::glance(model)
+```
+From this table, we can see our model has an R-squared of 0.351. This means that GDP explains 35.1% of variation in Fertility Rate. This may not seem like very much, but considering how many factors influence Fertility Rate in generally, being able to explain 35% of that is relatively good.
+
+We can also refer to the model summary:
+```{r}
+#| code-fold: true
+summary(model)
+```
+Here we can see that the Root mean squared error is 0.877. This means that the typical prediction error is 0.877. The predicted fertility rate will vary by 0.877 on average. 
+
+
