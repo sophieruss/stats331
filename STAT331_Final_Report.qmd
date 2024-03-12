@@ -19,6 +19,8 @@ execute:
 ```{r}
 library(tidyverse)
 library(broom)
+library(patchwork)
+
 fertility <- read_csv("children.csv")
 gdp <- read_csv("gdp.csv")
 ```
@@ -92,13 +94,24 @@ We will begin by investigating visualization of data on Gross Domestic Product a
 
 ```{r}
 #| code-fold: true
+
+rescale_01 <- function(x){
+  stopifnot(is.numeric(x))
+  stopifnot(length(x) > 1)
+  
+  min = min(x, na.rm = TRUE)
+  max = max(x, na.rm = TRUE)
+  
+  return ( (x-min)/(max-min) )
+}
+
 avg_fertility_gdp <-fertility_gdp |>
   #filter(country == "USA") |> #keep this line to see the USA (baby-boom)
   group_by(year) |>
   summarize(mean_gdp = mean(gdp), 
             mean_fertility = mean(fertility)) |>
-  mutate(gdp_normalized = scale(mean_gdp),
-         fertility_normalized = scale(mean_fertility))
+  mutate(gdp_normalized = rescale_01(mean_gdp),
+         fertility_normalized = rescale_01(mean_fertility))
 
 ggplot(avg_fertility_gdp, aes(x = year)) +
   geom_line(aes(y = gdp_normalized, color = "GDP"), linetype="dashed") +
@@ -191,13 +204,15 @@ data_both <- data.frame(
   pred_fertility = pred_er,
   avg_fertility = avg_fertility_gdp$avg_fertility)
 
-ggplot(data = data_both, aes(x = avg_gdp)) +
+plot_pred <- ggplot(data = data_both, aes(x = avg_gdp)) +
 geom_point(aes(y = pred_er), color = "darkseagreen3", shape=1)
 
-ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)+
+plot_obs <- ggplot(data = data_both, aes(x = avg_gdp)) +
+geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)
 
+plot_combined <- plot_pred + plot_obs
+plot_combined
 
-```
+g```
 
 
