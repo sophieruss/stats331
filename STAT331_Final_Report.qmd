@@ -191,10 +191,15 @@ set.seed(100)
 
 pred <- predict(model)
 rse <- sigma(model)
-random_errors <- rnorm(length(pred), mean = 0, sd = rse)
-pred_er <- pred + random_errors
 
-data <- data.frame(avg_gdp = avg_fertility_gdp$avg_gdp, pred_er = pred_er)
+noise <- function (x, sd){
+  x + rnorm(length(x), mean = 0, sd)
+  
+}
+
+predicted_er <- noise(pred, rse)
+
+data <- data.frame(avg_gdp = avg_fertility_gdp$avg_gdp, pred_er = predicted_er)
 
 data_both <- data.frame(
   avg_gdp = avg_fertility_gdp$avg_gdp,
@@ -209,5 +214,14 @@ geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)
 
 plot_combined <- plot_pred + plot_obs
 plot_combined
+
+```
+
+
+
+## 3.2 Generating Multiple Predictive Checks
+
+
+```{r}
 
 ```
