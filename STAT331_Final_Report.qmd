@@ -20,13 +20,9 @@ execute:
 #| code-fold: true
 library(tidyverse)
 library(broom)
-<<<<<<< HEAD
 library(knitr)
 library(kableExtra)
-=======
 library(patchwork)
-
->>>>>>> e8090cee16dc766327d89c35b9938de40275771a
 fertility <- read_csv("children.csv")
 gdp <- read_csv("gdp.csv")
 ```
@@ -216,10 +212,4 @@ geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)
 plot_combined <- plot_pred + plot_obs
 plot_combined
 
-<<<<<<< HEAD
 ```
-=======
-g```
-
-
->>>>>>> e8090cee16dc766327d89c35b9938de40275771a
