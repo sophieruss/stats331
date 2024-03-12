@@ -145,7 +145,7 @@ In this graph, we can see that as average GDP increases, the average Fertility r
 
 ## 2.2 Linear Regression
 
-In this exploration, we applied a simple linear regression to the model. Simple Linear regression assumes a linear relationship between the variables, average GDP and average Fertility rate, as well as normally distributed, independent errors with a mean of 0 and equal variance.
+In this exploration, we applied a simple linear regression to the model. Simple Linear regression assumes a linear relationship between the variables, average GDP and average Fertility rate, as well as normally distributed, independent errors with a mean of 0 and equal variance of $\sigma$.
 
 The estimated regression model is as follows:
 
