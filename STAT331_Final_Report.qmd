@@ -223,5 +223,55 @@ plot_combined
 
 
 ```{r}
+set.seed(222)
+model_lm <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
+model_predict <- predict(model_lm)
+model_sigma <- sigma(model_lm)
+noise <- function(x, mean = 0, sd){
+  x + rnorm(length(x), 
+            mean, 
+            sd)
+}
+sim_response <- tibble(sim_fertility = noise(model_predict,
+                                             sd = model_sigma))
+sim_data <- avg_fertility_gdp |>
+  filter(!is.na(avg_fertility),
+         !is.na(avg_gdp)) |>
+  select(avg_fertility, avg_gdp) |>
+  bind_cols(sim_response)
 
+lm(avg_fertility ~ sim_fertility, data = sim_data) |>
+  glance()
+
+sim_r2 <- lm(avg_fertility ~sim_fertility, data = sim_data) |>
+  glance() |>
+  select(r.squared) |>
+  pull()
+
+sims <- map_dfc(.x = 1:1000,
+                .f = ~tibble(sim = noise(model_predict,
+                                         sd = model_sigma)))
+colnames(sims) <- colnames(sims) |> 
+  str_replace(pattern = "\\.\\.\\.",
+                  replace = "_")
+
+sims <- avg_fertility_gdp |>
+  filter(!is.na(avg_fertility),
+         !is.na(avg_gdp)) |>
+  select(avg_fertility) |>
+  bind_cols(sims)
+
+sims_r_squared <- sims |>
+  map( ~ lm(avg_fertility ~ .x, data=sims)) |>
+  map(glance) |>
+  map_dbl(~.x$r.squared)
+
+sims_r_squared <- sims_r_squared[names(sims_r_squared) != "avg_fertility"]
+
+tibble(sims = sims_r_squared) |>
+  ggplot(aes(x = sims)) +
+  geom_histogram(binwidth = 0.025) +
+  labs(x = "Simulated R^2",
+       y= NULL,
+       subtitle = "Number of Simulated Models")
 ```
