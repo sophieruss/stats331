@@ -103,8 +103,9 @@ avg_fertility_gdp <-fertility_gdp |>
 ggplot(avg_fertility_gdp, aes(x = year)) +
   geom_line(aes(y = gdp_normalized, color = "GDP"), linetype="dashed") +
   geom_line(aes(y = fertility_normalized, color = "Fertility"))+
-  labs(title = "Normalized average Fertility Rate and GDP over Time",
+  labs(title = "Normalized Mean Global Fertility Rate and GDP over Years",
       y=NULL,
+      subtitle = "Normalized Mean Global Fertility Rate and GDP",
       x = "Year",
       color="Variable")
 
@@ -172,3 +173,31 @@ variances
 This table shows that about 0.414/1.179 = 0.351, or about 35.1% of the variability in the average fertility rate values was accounted for by our regression model. This is a somewhat low amount of variability being explained, as there is  about 0.765/1.179 = 0.649, or about 64.9% of variability in the response still left unexplained by the model with only average GDP as the predictor.
 
 Considering how many factors influence Fertillity rate overall, being able to explain 35.1% of its variability is somewhat impressive. Still, only looking at R-squared, our simple linear regression model with average GDP as the predictor is not ideal. The remaining variability could be explained with a more complex model that looks at other factors influencing Fertility rate.
+
+
+## 3.1 Visualizing Simulations from the Model
+```{r}
+set.seed(100)
+
+pred <- predict(model)
+rse <- sigma(model)
+random_errors <- rnorm(length(pred), mean = 0, sd = rse)
+pred_er <- pred + random_errors
+
+data <- data.frame(avg_gdp = avg_fertility_gdp$avg_gdp, pred_er = pred_er)
+
+data_both <- data.frame(
+  avg_gdp = avg_fertility_gdp$avg_gdp,
+  pred_fertility = pred_er,
+  avg_fertility = avg_fertility_gdp$avg_fertility)
+
+ggplot(data = data_both, aes(x = avg_gdp)) +
+geom_point(aes(y = pred_er), color = "darkseagreen3", shape=1)
+
+ggplot(data = data_both, aes(x = avg_gdp)) +
+geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)+
+
+
+```
+
+
