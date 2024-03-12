@@ -35,15 +35,8 @@ The dataset `gdp.csv` contains the gross domestic product (GDP) per person (capi
 
 The dataset `children.csv` contains the number of babies per woman (Total Fertility Rate) for 202 countries from 1800 to 2100, with each year a column (variable) and each country a row (observation). Total Fertility Rate is “the number of children that would be born to each woman with prevailing age-specific fertility rates” (Gapminder). Gapminder’s dataset uses estimates from the UN for most of its data and has predicted data up to 2100 using the UN projection of future fertility rate in all countries. However, for the scope of our project, we will focus on data up to 2024.
 
-<<<<<<< HEAD
-We hypothesize that there will be a **negative** association between GDP per capita and Total Fertility Rate. Through internet research, we found that, in general, poor countries tend to have higher levels of fertility than rich countries ([Vandenbroucke](https://www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income)). We are interested in exploring and confirming (or refuting) this relationship in general and over time with the time series data that we have.
-
-To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all missing values in both datasets. Then, we merged both datasets using an inner join to only contain observations that have values for both gdp and fertility.
-
-Our final cleaned and merged dataset `fertility_gdp` has 4 variables: country (character), year (numeric), gdp (numeric), and fertility (numeric). It contains data on 186 countries in total.
-=======
 We hypothesize that there will be a **negative** association between GDP per capita and Total Fertility Rate. Our explanatory variable will be GDP per capita and our response variable of interest will be Total Fertility Rate. Through internet research, we found that, in general, poor countries tend to have higher levels of fertility than rich countries ([Vandenbroucke](https://www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income)). We are interested in exploring and confirming (or refuting) this relationship in general and over time with the time series data that we have.
->>>>>>> 045550b7ae38ab736ea4c804234aa8f9a21fde1b
+
 
 ## Cleaning Data
 
@@ -81,7 +74,7 @@ gdp_long <- gdp |>
 
 ### Combining both datasets
 
-Our final cleaned and merged dataset `fertility_gdp` has 4 variables: country (character), year (numeric), gdp (numeric), and fertility (numeric). It contains data on 186 countries in total.
+Our final cleaned and merged dataset `fertility_gdp` has 4 variables: country (character), year (numeric), gdp (numeric), and fertility (numeric). It contains data on 186 countries in total from the years 1800-2024.
 
 ```{r}
 #| code-fold: TRUE
@@ -93,7 +86,7 @@ fertility_gdp <- gdp_long |>
 
 ## 2.1 Data Visualization
 
-We will begin by investigating visualization of data on Gross Domestic Product and Fertility rate. Firstly, we investigate the relationship of Gross Domestic Product over time and Fertility rate over time. We average GDP and fertility across all countries per year, to get a single value for average GDP and average Fertility Rate for every year. We also scaled the values of GDP and fertility rate to be between 0 and 1, so that we can compare the two variables with each other, in the following graphic.
+We will begin by investigating visualization of data on Gross Domestic Product and Fertility rate. Firstly, we investigate the relationship of Gross Domestic Product over time and Fertility rate over time. We average GDP and fertility across all countries per year, to get a single value for average GDP and average Fertility Rate for every year. We also normalized the values of GDP and fertility rate to be between 0 and 1, so that we can compare the two variables with each other, in the following graphic.
 
 ```{r}
 #| code-fold: true
