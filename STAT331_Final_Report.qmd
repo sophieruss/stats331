@@ -133,10 +133,9 @@ In this graph, we can see that as average GDP increases, the average Fertility r
 
 ## 2.2 Linear Regression
 
-In this exploration, we applied a simple linear regression to the model. Simple Linear regression assumes a linear relationship between the variables, GDP and Fertility rate, as well as normally distributed errors, with a mean of 0. 
+In this exploration, we applied a simple linear regression to the model. Simple Linear regression assumes a linear relationship between the variables, average GDP and average Fertility rate, as well as normally distributed, independent errors with a mean of 0 and equal variance. 
 
 The estimated regression model is as follows:
-
 ```{r}
 #| code-fold: true
 model <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
@@ -157,17 +156,19 @@ Coefficient Interpretations:
 
     -   Equivalently, for every \$10,000 (in PPP 2017 dollars) increase in country's average GDP the country's estimated average fertility rate is estimated to decrease by 1.2 babies per woman.
     
-As for assessing the fit of our model, we can refer to the following table:
+As for assessing the fit of our model, we can refer to the following table of variances:
 
 ```{r}
 #| code-fold: true
-broom::glance(model)
-```
-From this table, we can see our model has an R-squared of 0.351. This means that GDP explains 35.1% of variation in Fertility Rate. This may not seem like very much, but considering how many factors influence Fertility Rate in generally, being able to explain 35% of that is relatively good.
+variances <- data.frame(
+  response_variance = var(avg_fertility_gdp$avg_fertility),
+  fitted_variance = var(model$fitted.values),
+  residual_variance = var(model$residuals)
+)
 
-We can also refer to the model summary:
-```{r}
-#| code-fold: true
-summary(model)
+variances
 ```
-Here we can see that the Root mean squared error is 0.877. This means that the typical prediction error is 0.877. The predicted fertility rate will vary by 0.877 on average. 
+
+This table shows that about 0.414/1.179 = 0.351, or about 35.1% of the variability in the average fertility rate values was accounted for by our regression model. This is a somewhat low amount of variability being explained, as there is  about 0.765/1.179 = 0.649, or about 64.9% of variability in the response still left unexplained by the model with only average GDP as the predictor.
+
+Considering how many factors influence Fertillity rate overall, being able to explain 35.1% of its variability is somewhat impressive. Still, only looking at R-squared, our simple linear regression model with average GDP as the predictor is not ideal. The remaining variability could be explained with a more complex model that looks at other factors influencing Fertility rate.
