@@ -1,5 +1,5 @@
 ---
-title: "STAT 331 Project Proposal"
+title: "STAT 331 Final Report"
 author: "Ellexis Monsanto, Sophie Russ, Emma Siskens"
 format: 
   html:
