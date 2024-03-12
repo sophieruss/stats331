@@ -17,6 +17,7 @@ execute:
 ## Read in Data + Load Libraries
 
 ```{r}
+#| code-fold: true
 library(tidyverse)
 library(broom)
 library(patchwork)
@@ -35,7 +36,7 @@ The dataset `children.csv` contains the number of babies per woman (Total Fertil
 
 We hypothesize that there will be a **negative** association between GDP per capita and Total Fertility Rate. Through internet research, we found that, in general, poor countries tend to have higher levels of fertility than rich countries ([Vandenbroucke](https://www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income)). We are interested in exploring and confirming (or refuting) this relationship in general and over time with the time series data that we have.
 
-To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all NA values in both datasets. Then, we merged both datasets using an inner_join() to only contain observations that have values for both gdp and fertility.
+To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all missing values in both datasets. Then, we merged both datasets using an inner join to only contain observations that have values for both gdp and fertility.
 
 Our final cleaned and merged dataset `fertility_gdp` has 4 variables: country (character), year (numeric), gdp (numeric), and fertility (numeric). It contains data on 186 countries in total.
 
@@ -90,7 +91,7 @@ head(fertility_gdp)
 
 ## 2.1 Data Visualization
 
-We will begin by investigating visualization of data on Gross Domestic Product and Fertility rate. Firstly, we investigate the relationship of Gross Domestic Product over time and Fertility rate over time. We average GDP and fertility across all countries per year, to get a single value for average GDP and average Fertility Rate for every year. We also normalize the values of GDP and fertility rate, so that we can compare the two variables with each other, in the following graphic.
+We will begin by investigating visualization of data on Gross Domestic Product and Fertility rate. Firstly, we investigate the relationship of Gross Domestic Product over time and Fertility rate over time. We average GDP and fertility across all countries per year, to get a single value for average GDP and average Fertility Rate for every year. We also scaled the values of GDP and fertility rate to be between 0 and 1, so that we can compare the two variables with each other, in the following graphic.
 
 ```{r}
 #| code-fold: true
