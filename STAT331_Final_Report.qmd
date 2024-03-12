@@ -53,8 +53,6 @@ fertility_long <- fertility |>
   mutate(year = as.numeric(year)) |>
   filter(year < 2025) |>
   drop_na()
-
-summary(fertility_long)
 ```
 
 ### Cleaning `gdp.csv`
@@ -72,8 +70,6 @@ gdp_long <- gdp |>
   mutate(year = as.numeric(year)) |>
   filter(year < 2025) |>
   drop_na()
-
-summary(gdp_long)
 ```
 
 ### Combining both datasets
@@ -82,9 +78,6 @@ summary(gdp_long)
 #| code-fold: TRUE
 fertility_gdp <- gdp_long |>
   inner_join(fertility_long)
-
-head(fertility_gdp)
-
 ```
 
 ## 2 Linear Regression
