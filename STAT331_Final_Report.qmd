@@ -221,8 +221,13 @@ model |>
 ```
 Here we can see some fanning in the data points, which would indicate that the equal variance assumption may be violated.
 
-## 3.1 Visualizing Simulations from the Model
+# 3 Simulation
 
+We now generate a predictive check, to assess how well our model is performing. We simulate data from our linear regression model and then compare this to the actual observed data points, reporting the proportion of variability explained. 
+
+## 3.1 Visualizing Simulation from the Model
+
+In the following graphic, we visualize a single simulation of data from our model next to our actual observations.
 ```{r}
 #| code-fold: true
 set.seed(100)
@@ -245,20 +250,28 @@ data_both <- data.frame(
   avg_fertility = avg_fertility_gdp$avg_fertility)
 
 plot_pred <- ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = pred_er), color = "darkseagreen3", shape=1)
+geom_point(aes(y = pred_er), color = "darkseagreen3", shape=1)+
+  labs(title = "Simulated Data",
+       x = "Average GDP (2017 PPP$)",
+       y= NULL,
+       subtitle = "Average Fertility (# of babies per woman)")
 
 plot_obs <- ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)
+geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)+
+    labs(title = "Observed Data",
+       x = "Average GDP (2017 PPP$)",
+       y= NULL,
+       subtitle = "Average Fertility (# of babies per woman)")
 
 plot_combined <- plot_pred + plot_obs
 plot_combined
 
 ```
-
-
+From this graphic, we can see that our simulated data differs from our observed data. Both graphs have a negative association and are right skewed. However, our simulated data follows a much more linear association than our observed. Again, the observed data follows a more curved association, with a couple potential outliers in the upper right corner of the graph.
 
 ## 3.2 Generating Multiple Predictive Checks
 
+Next, we perform the same comparison as above 1000 times and report the proportion of variability explained in the observed data by our simulated data. Then, we can plot a distribution of this amount of variability explained across the 1000 simulations. This distribution is shown below.
 
 ```{r}
 #| code-fold: true
@@ -314,3 +327,7 @@ tibble(sims = sims_r_squared) |>
        y= NULL,
        subtitle = "Number of Simulated Models")
 ```
+Ideally, we would want the center of our distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In our distribution we can see that the majorty of the $R^2$ values fall 0.125. This means that over the 1000 simulations, the majority of our generated data explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
+
+Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements (identified in section 2.2).
+
