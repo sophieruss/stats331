@@ -91,32 +91,39 @@ We will begin by investigating visualization of data on Gross Domestic Product a
 ```{r}
 #| code-fold: true
 
-rescale_01 <- function(x){
-  stopifnot(is.numeric(x))
-  stopifnot(length(x) > 1)
-  
-  min = min(x, na.rm = TRUE)
-  max = max(x, na.rm = TRUE)
-  
-  return ( (x-min)/(max-min) )
+map_to_decade <- function(year) {
+  if (year < 1850) {
+    return("1800-1850")
+  } else if (year < 1900) {
+    return("1850-1900")
+  } else if (year < 1950) {
+    return("1900-1950")
+  } else if (year < 2000) {
+    return("1950-2000")
+  } else {
+    return("2000-Present")
+  }
 }
 
-avg_fertility_gdp <-fertility_gdp |>
-  #filter(country == "USA") |> #keep this line to see the USA (baby-boom)
-  group_by(year) |>
-  summarize(mean_gdp = mean(gdp), 
-            mean_fertility = mean(fertility)) |>
-  mutate(gdp_normalized = rescale_01(mean_gdp),
-         fertility_normalized = rescale_01(mean_fertility))
-
-ggplot(avg_fertility_gdp, aes(x = year)) +
-  geom_line(aes(y = gdp_normalized, color = "GDP"), linetype="dashed") +
-  geom_line(aes(y = fertility_normalized, color = "Fertility"))+
-  labs(title = "Normalized Mean Global Fertility Rate and GDP over Years",
-      y=NULL,
-      subtitle = "Normalized Mean Global Fertility Rate and GDP",
-      x = "Year",
-      color="Variable")
+avg_fertility_gdp <- fertility_gdp |>
+  mutate(decade = case_when(
+    year < 1850 ~ "1800-1850",
+    year < 1900 ~ "1850-1900",
+    year < 1950 ~ "1900-1950",
+    year < 2000 ~ "1950-2000",
+    .default = "2000-Present")) |>
+  group_by(country, decade)|>
+  summarise(avg_fertility = mean(fertility), avg_gdp = mean(gdp)) 
+  
+ggplot(aes(x = avg_gdp,
+             y = avg_fertility),
+       data = avg_fertility_gdp) +
+  geom_point()+
+  labs(title = "Average Fertility Rate vs Average GDP per country",
+       subtitle = "Average Fertility Rate per Country",
+       y = NULL,
+       x = "Average GDP per Country") +
+facet_wrap(. ~ decade, scales = "free_x")
 
 ```
 
