@@ -167,6 +167,7 @@ When the country's average GDP over the years 1800 to 2024 is equal to zero, the
 
 For every \$1 (in PPP 2017 dollars) increase in country's average GDP, the country's estimated average fertility rate is estimated to decrease by 0.00012 babies per woman. Equivalently, for every \$10,000 (in PPP 2017 dollars) increase in country's average GDP the country's estimated average fertility rate is estimated to decrease by 1.2 babies per woman.
 
+### Assessing Model Fit
 As for assessing the fit of our model, we can refer to the following table of variances:
 
 ```{r}
@@ -186,7 +187,7 @@ Considering how many factors influence Fertility rate overall, being able to exp
 
 Next, we will analyze the Linear Regression assumptions.
 
-### Linearity Asumptions
+### Linearity Assumptions
 From our plot of average GDP vs. average Fertility in section 2.1, we can see that the data may not follow a linear relationship. The form of the observations seems to be more curved, and therefore the linearity assumption may be violated.
 
 ### Independence Assumptions
@@ -195,6 +196,7 @@ Whether out errors are independent of each other depends on the sampling method 
 ### Normal Distribution of Errors
 To assess the distribution of our errors we look at the following plot;
 ```{r}
+#| code-fold: true
 errors <- resid(model)
 error_df <- data.frame(Errors = errors)
 error_df|>
@@ -206,6 +208,7 @@ This plot somewhat resembles a bell-curve. There are a few values that are unusu
 ### Equal Variance
 To assess the variance of our errors, we look at the following plot;
 ```{r}
+#| code-fold: true
 model |>
   augment()|>
   ggplot(aes(x = .fitted, 
@@ -221,6 +224,7 @@ Here we can see some fanning in the data points, which would indicate that the e
 ## 3.1 Visualizing Simulations from the Model
 
 ```{r}
+#| code-fold: true
 set.seed(100)
 
 pred <- predict(model)
@@ -257,6 +261,7 @@ plot_combined
 
 
 ```{r}
+#| code-fold: true
 set.seed(222)
 model_lm <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
 model_predict <- predict(model_lm)
