@@ -155,47 +155,6 @@ In this graph, we can see that as average GDP increases, the average Fertility r
 
 In this exploration, we will create a simple linear regression model to attempt to fit our data. Simple Linear regression assumes a linear relationship between the variables, average GDP and average Fertility rate, as well as normally distributed, independent errors with a mean of 0 and equal variance.
 
-First, we will analyze the Linear Regression assumptions.
-
-### Linearity Assumptions
-From our plot of average GDP vs. average Fertility Rate in section 2.1, we can see that the data may not follow a linear relationship. The form of the observations seems to be more curved, and therefore the linearity assumption may be violated.
-
-### Independence Assumptions
-Whether our errors are independent of each other depends on the sampling method of the data. Here we assume that the data from Gapminder was randomly sampled, and therefore the independence assumption is met.
-
-### Normal Distribution of Errors
-To assess the distribution of our errors we look at the following plot
-```{r}
-#| code-fold: true
-errors <- resid(model)
-error_df <- data.frame(Errors = errors)
-error_df|>
-  ggplot(mapping = aes(x = Errors)) +
-  geom_histogram() +
-  labs(y = "",
-       x = "Residuals",
-       title = "Histogram of Residuals")+
-  theme_bw()
-```
-This plot somewhat resembles a bell-curve. There are a few values that are unusually large, and they may be outliers. Nonetheless, we can conclude that the normality assumption is reasonably met.
-
-### Equal Variance
-To assess the variance of our errors, we look at the following plot;
-```{r}
-#| code-fold: true
-model |>
-  augment()|>
-  ggplot(aes(x = .fitted, 
-             y=.resid)) +
-  geom_point() +
-  labs(x = "Fitted Values",
-       y = NULL,
-       subtitle = "Residual Values",
-       title = "Residuals vs. Fitted Plot")+
-  theme_bw()
-```
-In this plot of fitted values versus residuals, we can see some fanning in the data points. This indicates that the equal variance assumption is violated. Due to this violation, we will be cautious as we perform simple linear regression.
-
 After fitting the data, the estimated linear regression model is as follows:
 
 ```{r}
@@ -232,6 +191,48 @@ This table shows that about 0.414/1.179 = 0.351, or about 35.1% of the variabili
 
 Considering how many factors influence Fertility rate overall, being able to explain 35.1% of its variability is somewhat impressive. Still, only looking at R-squared, our simple linear regression model with average GDP as the predictor is not ideal. The remaining variability could be explained with a more complex model that looks at other factors influencing Fertility rate.
 
+Next, we will analyze the Linear Regression assumptions.
+
+### Linearity Assumptions
+From our plot of average GDP vs. average Fertility Rate in section 2.1, we can see that the data may not follow a linear relationship. The form of the observations seems to be more curved, and therefore the linearity assumption may be violated.
+
+### Independence Assumptions
+Since the response variable in our model is average fertility rate for every country, taken over time, we can assume that the observations are independent of one another. That is, the average fertility rate of one country does not influence that of another country. Thus, we can assume that the independence assumption is reasonably met for the model. 
+
+### Normal Distribution of Errors
+To assess the distribution of our errors we look at the following plot
+```{r}
+#| code-fold: true
+errors <- resid(model)
+error_df <- data.frame(Errors = errors)
+error_df|>
+  ggplot(mapping = aes(x = Errors)) +
+  geom_histogram() +
+  labs(y = "",
+       x = "Residuals",
+       title = "Histogram of Residuals")+
+  theme_bw()
+```
+This plot somewhat resembles a bell-curve. There are a few values that are unusually large, and they may be outliers. Nonetheless, we can conclude that the normality assumption is reasonably met.
+
+### Equal Variance
+To assess the variance of our errors, we look at the following plot;
+```{r}
+#| code-fold: true
+model |>
+  augment()|>
+  ggplot(aes(x = .fitted, 
+             y=.resid)) +
+  geom_point() +
+  labs(x = "Fitted Values",
+       y = NULL,
+       subtitle = "Residual Values",
+       title = "Residuals vs. Fitted Plot")+
+  theme_bw()
+```
+In this plot of fitted values versus residuals, we can see some fanning in the data points. This indicates that the equal variance assumption is violated. 
+
+Due to the violation of the assumptions of linearity and equal variance, we should be cautious of performing linear regression for this dataset. Next, we will further assess our linear regression model with the use of simulation.
 
 # 3 Simulation
 
