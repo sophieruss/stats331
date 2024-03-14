@@ -135,9 +135,10 @@ ggplot(aes(x = avg_gdp,
        data = avg_fertility_gdp) +
   geom_point()+
   labs(title = "Average Fertility Rate vs Average GDP per country",
-       subtitle = "Average Fertility Rate per Country",
+       subtitle = "Average Fertility Rate per Country (# of babies per woman)",
        y = NULL,
-       x = "Average GDP per Country")
+       x = "Average GDP per Country (2017 PPP$)")+
+  theme_bw()
   
 ```
 
@@ -166,7 +167,8 @@ error_df|>
   geom_histogram() +
   labs(y = "",
        x = "Residuals",
-       title = "Histogram of Residuals")
+       title = "Histogram of Residuals")+
+  theme_bw()
 ```
 This plot somewhat resembles a bell-curve. There are a few values that are unusually large, and they may be outliers. Nonetheless, we can conclude that the normality assumption is reasonably met.
 
@@ -181,8 +183,9 @@ model |>
   geom_point() +
   labs(x = "Fitted Values",
        y = NULL,
-       subtitle = "Residuals",
-       title = "Residuals vs. Fitted Plot")
+       subtitle = "Residual Values",
+       title = "Residuals vs. Fitted Plot")+
+  theme_bw()
 ```
 In this plot of fitted values versus residuals, we can see some fanning in the data points. This indicates that the equal variance assumption is violated. Due to this violation, we will be cautious as we perform simple linear regression.
 
@@ -191,7 +194,8 @@ After fitting the data, the estimated linear regression model is as follows:
 ```{r}
 #| code-fold: true
 model <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
-tidy(model)
+tidy(model) |>
+knitr::kable(digits = 2)
 ```
 
 $\widehat{Average Fertility}=5.9839-0.00012(AverageGDP)$
@@ -213,7 +217,8 @@ variances <- data.frame(
   residual_variance = var(model$residuals)
 )
 
-variances
+variances |>
+knitr::kable(digits = 2)
 ```
 
 This table shows that about 0.414/1.179 = 0.351, or about 35.1% of the variability in the average fertility rate values was accounted for by our regression model. This is a somewhat low amount of variability being explained, as there is about 0.765/1.179 = 0.649, or about 64.9% of variability in the response still left unexplained by the model with only average GDP as the predictor.
@@ -250,10 +255,22 @@ data_both <- data.frame(
   avg_fertility = avg_fertility_gdp$avg_fertility)
 
 plot_pred <- ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = predicted_er), color = "darkseagreen3", shape=1)
+
+geom_point(aes(y = predicted_er), color = "darkseagreen3", shape=1) + 
+  labs(title = "Simulated Data",
+       x = "Average GDP (2017 PPP$)",
+       y = NULL,
+       subtitle = "Average Fertiltiy Rate (# of babies per woman)") +
+  theme_bw()
+
 
 plot_obs <- ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)
+geom_point(aes(y = avg_fertility), color = "slateblue", shape=8) + 
+    labs(title = "Observed Data",
+       x = "Average GDP (2017 PPP$)",
+       y = NULL,
+       subtitle = "Average Fertiltiy Rate (# of babies per woman)") +
+  theme_bw()
 
 plot_combined <- plot_pred + plot_obs
 plot_combined
@@ -317,9 +334,16 @@ tibble(sims = sims_r_squared) |>
   geom_histogram(binwidth = 0.025) +
   labs(x = "Simulated R^2",
        y= NULL,
-       subtitle = "Number of Simulated Models")
+       subtitle = "Number of Simulated Models",
+       title = "Distribution of simulated R^2") +
+  theme_bw()
 ```
 
+<<<<<<< HEAD
 Ideally, we would want the center of the distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In the distribution we can see that the majorty of the $R^2$ values fall 0.125. This means that over the 1000 simulations, the majority of our generated data explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
+=======
+
+Ideally, we would want the center of our distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In our distribution we can see that the majority of the $R^2$ values fall 0.125. This means that over the 1000 simulations, the majority of our generated data explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
+>>>>>>> 033496fecae00429c42bfb74bbe2d6dbc4cdf676
 
 Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements (identified in section 2.2).
