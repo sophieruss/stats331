@@ -223,11 +223,11 @@ Considering how many factors influence Fertility rate overall, being able to exp
 
 # 3 Simulation
 
-We now generate a predictive check, to assess how well our model is performing. We simulate data from our linear regression model and then compare this to the actual observed data points, reporting the proportion of variability explained. 
+We will now generate a predictive check, to assess how well our model is performing. We simulate data from our linear regression model and then compare this to the actual observed data points, reporting the proportion of variability explained. 
 
 ## 3.1 Visualizing Simulation from the Model
 
-In the following graphic, we visualize a single simulation of data from our model next to our actual observations.
+In the following graphic, we visualize a single simulation of data from our model next to the actual observations.
 ```{r}
 #| code-fold: true
 set.seed(100)
@@ -246,11 +246,11 @@ data <- data.frame(avg_gdp = avg_fertility_gdp$avg_gdp, pred_er = predicted_er)
 
 data_both <- data.frame(
   avg_gdp = avg_fertility_gdp$avg_gdp,
-  pred_fertility = pred_er,
+  pred_fertility = predicted_er,
   avg_fertility = avg_fertility_gdp$avg_fertility)
 
 plot_pred <- ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = pred_er), color = "darkseagreen3", shape=1)
+geom_point(aes(y = predicted_er), color = "darkseagreen3", shape=1)
 
 plot_obs <- ggplot(data = data_both, aes(x = avg_gdp)) +
 geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)
@@ -320,7 +320,6 @@ tibble(sims = sims_r_squared) |>
        subtitle = "Number of Simulated Models")
 ```
 
-
-Ideally, we would want the center of our distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In our distribution we can see that the majorty of the $R^2$ values fall 0.125. This means that over the 1000 simulations, the majority of our generated data explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
+Ideally, we would want the center of the distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In the distribution we can see that the majorty of the $R^2$ values fall 0.125. This means that over the 1000 simulations, the majority of our generated data explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
 
 Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements (identified in section 2.2).
