@@ -145,9 +145,48 @@ In this graph, we can see that as average GDP increases, the average Fertility r
 
 ## 2.2 Linear Regression
 
-In this exploration, we applied a simple linear regression to the model. Simple Linear regression assumes a linear relationship between the variables, average GDP and average Fertility rate, as well as normally distributed, independent errors with a mean of 0 and equal variance.
+In this exploration, we will create a simple linear regression model to attempt to fit our data. Simple Linear regression assumes a linear relationship between the variables, average GDP and average Fertility rate, as well as normally distributed, independent errors with a mean of 0 and equal variance.
 
-The estimated regression model is as follows:
+First, we will analyze the Linear Regression assumptions.
+
+### Linearity Assumptions
+From our plot of average GDP vs. average Fertility Rate in section 2.1, we can see that the data may not follow a linear relationship. The form of the observations seems to be more curved, and therefore the linearity assumption may be violated.
+
+### Independence Assumptions
+Whether our errors are independent of each other depends on the sampling method of the data. Here we assume that the data from Gapminder was randomly sampled, and therefore the independence assumption is met.
+
+### Normal Distribution of Errors
+To assess the distribution of our errors we look at the following plot
+```{r}
+#| code-fold: true
+errors <- resid(model)
+error_df <- data.frame(Errors = errors)
+error_df|>
+  ggplot(mapping = aes(x = Errors)) +
+  geom_histogram() +
+  labs(y = "",
+       x = "Residuals",
+       title = "Histogram of Residuals")
+```
+This plot somewhat resembles a bell-curve. There are a few values that are unusually large, and they may be outliers. Nonetheless, we can conclude that the normality assumption is reasonably met.
+
+### Equal Variance
+To assess the variance of our errors, we look at the following plot;
+```{r}
+#| code-fold: true
+model |>
+  augment()|>
+  ggplot(aes(x = .fitted, 
+             y=.resid)) +
+  geom_point() +
+  labs(x = "Fitted Values",
+       y = NULL,
+       subtitle = "Residuals",
+       title = "Residuals vs. Fitted Plot")
+```
+In this plot of fitted values versus residuals, we can see some fanning in the data points. This indicates that the equal variance assumption is violated. Due to this violation, we will be cautious as we perform simple linear regression.
+
+After fitting the data, the estimated linear regression model is as follows:
 
 ```{r}
 #| code-fold: true
@@ -155,17 +194,13 @@ model <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
 tidy(model)
 ```
 
-$\hat{Average Fertility}=5.9839-0.00012(AverageGDP)$
+$\widehat{Average Fertility}=5.9839-0.00012(AverageGDP)$
 
 ### Coefficient Interpretations
 
--   Intercept = 5.9839
+The estimated intercept of the model was 5.9839. When the country's average GDP over the years 1800 to 2024 is equal to zero, the country's estimated average fertility rate is 5.9839 babies per woman.
 
-When the country's average GDP over the years 1800 to 2024 is equal to zero, the country's estimated average fertility rate is 5.9839 babies per woman.
-
--   AverageGDP = -0.00012
-
-For every \$1 (in PPP 2017 dollars) increase in country's average GDP, the country's estimated average fertility rate is estimated to decrease by 0.00012 babies per woman. Equivalently, for every \$10,000 (in PPP 2017 dollars) increase in country's average GDP the country's estimated average fertility rate is estimated to decrease by 1.2 babies per woman.
+The estimated slope coefficient for Average GDP was -0.00012. For every \$1 (in PPP 2017 dollars) increase in country's average GDP, the country's estimated average fertility rate is estimated to decrease by 0.00012 babies per woman. Equivalently, for every \$10,000 (in PPP 2017 dollars) increase in country's average GDP the country's estimated average fertility rate is estimated to decrease by 1.2 babies per woman.
 
 ### Assessing Model Fit
 As for assessing the fit of our model, we can refer to the following table of variances:
@@ -185,49 +220,8 @@ This table shows that about 0.414/1.179 = 0.351, or about 35.1% of the variabili
 
 Considering how many factors influence Fertility rate overall, being able to explain 35.1% of its variability is somewhat impressive. Still, only looking at R-squared, our simple linear regression model with average GDP as the predictor is not ideal. The remaining variability could be explained with a more complex model that looks at other factors influencing Fertility rate.
 
-Next, we will analyze the Linear Regression assumptions.
+## 3.1 Visualizing Simulations from the Model
 
-### Linearity Assumptions
-From our plot of average GDP vs. average Fertility in section 2.1, we can see that the data may not follow a linear relationship. The form of the observations seems to be more curved, and therefore the linearity assumption may be violated.
-
-### Independence Assumptions
-Whether out errors are independent of each other depends on the sampling method of the data. Here we assume that the data from Gapminder was randomly sampled, and therefore the independence assumption is met.
-
-### Normal Distribution of Errors
-To assess the distribution of our errors we look at the following plot;
-```{r}
-#| code-fold: true
-errors <- resid(model)
-error_df <- data.frame(Errors = errors)
-error_df|>
-  ggplot(mapping = aes(x = Errors)) +
-  geom_histogram()
-```
-This plot somewhat resembles a bell-curve. There are a few values that are unusually large, and they may be outliers. Nonetheless, we will concluded that the normality assumption is reasonably met.
-
-### Equal Variance
-To assess the variance of our errors, we look at the following plot;
-```{r}
-#| code-fold: true
-model |>
-  augment()|>
-  ggplot(aes(x = .fitted, 
-             y=.resid)) +
-  geom_point() +
-  labs(x = "Fitted Values",
-       y = NULL,
-       subtitle = "Residuals",
-       title = "Residuals vs. Fitted Plot")
-```
-Here we can see some fanning in the data points, which would indicate that the equal variance assumption may be violated.
-
-# 3 Simulation
-
-We now generate a predictive check, to assess how well our model is performing. We simulate data from our linear regression model and then compare this to the actual observed data points, reporting the proportion of variability explained. 
-
-## 3.1 Visualizing Simulation from the Model
-
-In the following graphic, we visualize a single simulation of data from our model next to our actual observations.
 ```{r}
 #| code-fold: true
 set.seed(100)
@@ -250,28 +244,20 @@ data_both <- data.frame(
   avg_fertility = avg_fertility_gdp$avg_fertility)
 
 plot_pred <- ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = pred_er), color = "darkseagreen3", shape=1)+
-  labs(title = "Simulated Data",
-       x = "Average GDP (2017 PPP$)",
-       y= NULL,
-       subtitle = "Average Fertility (# of babies per woman)")
+geom_point(aes(y = pred_er), color = "darkseagreen3", shape=1)
 
 plot_obs <- ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)+
-    labs(title = "Observed Data",
-       x = "Average GDP (2017 PPP$)",
-       y= NULL,
-       subtitle = "Average Fertility (# of babies per woman)")
+geom_point(aes(y = avg_fertility), color = "slateblue", shape=8)
 
 plot_combined <- plot_pred + plot_obs
 plot_combined
 
 ```
-From this graphic, we can see that our simulated data differs from our observed data. Both graphs have a negative association and are right skewed. However, our simulated data follows a much more linear association than our observed. Again, the observed data follows a more curved association, with a couple potential outliers in the upper right corner of the graph.
+
+
 
 ## 3.2 Generating Multiple Predictive Checks
 
-Next, we perform the same comparison as above 1000 times and report the proportion of variability explained in the observed data by our simulated data. Then, we can plot a distribution of this amount of variability explained across the 1000 simulations. This distribution is shown below.
 
 ```{r}
 #| code-fold: true
@@ -327,7 +313,3 @@ tibble(sims = sims_r_squared) |>
        y= NULL,
        subtitle = "Number of Simulated Models")
 ```
-Ideally, we would want the center of our distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In our distribution we can see that the majorty of the $R^2$ values fall 0.125. This means that over the 1000 simulations, the majority of our generated data explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
-
-Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements (identified in section 2.2).
-
