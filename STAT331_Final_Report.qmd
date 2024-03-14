@@ -185,10 +185,13 @@ This table shows that about 0.414/1.179 = 0.351, or about 35.1% of the variabili
 Considering how many factors influence Fertility rate overall, being able to explain 35.1% of its variability is somewhat impressive. Still, only looking at R-squared, our simple linear regression model with average GDP as the predictor is not ideal. The remaining variability could be explained with a more complex model that looks at other factors influencing Fertility rate.
 
 Next, we will analyze the Linear Regression assumptions.
+
 ### Linearity Asumptions
 From our plot of average GDP vs. average Fertility in section 2.1, we can see that the data may not follow a linear relationship. The form of the observations seems to be more curved, and therefore the linearity assumption may be violated.
+
 ### Independence Assumptions
 Whether out errors are independent of each other depends on the sampling method of the data. Here we assume that the data from Gapminder was randomly sampled, and therefore the independence assumption is met.
+
 ### Normal Distribution of Errors
 To assess the distribution of our errors we look at the following plot;
 ```{r}
