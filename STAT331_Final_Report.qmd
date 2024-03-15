@@ -42,7 +42,7 @@ We hypothesize that there will be a **negative** association between GDP per cap
 
 ## 1.2 Cleaning Data
 
-To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all NA values in both datasets. Then, we merged both datasets using an inner_join() to only contain observations that have values for both gdp and fertility.
+To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all missing values in both datasets. Then, we merged both datasets using an inner join to only contain observations that have values for both gdp and fertility.
 
 ### Cleaning `fertility.csv`
 
@@ -84,11 +84,11 @@ fertility_gdp <- gdp_long |>
   inner_join(fertility_long)
 ```
 
-## 2 Linear Regression
+# 2 Linear Regression
 
 ## 2.1 Data Visualization
 
-We will begin by investigating visualization of data on Gross Domestic Product and Fertility rate. First off, we investigate the relationship of Gross Domestic Product over time and Fertility rate over time. We calculate the mean GDP and mean fertility for each country, for each 50-year time-span (1800-1850 to 2000-present). This results in 5 data points per country. We graph average gdp per country to average fertility rate per country, and facet by each 50-year time period in the following graphic.
+We will begin by investigating visualization of data on Gross Domestic Product and Fertility rate. First off, we investigate the relationship of Gross Domestic Product and Fertility in different centuries. We calculate the mean GDP and mean fertility for each country, for each 50-year time-span (1800-1850 to 2000-present). This results in 5 data points per country. We graph average gdp per country to average fertility rate per country, and facet by each 50-year time period in the following graphic.
 
 ```{r}
 #| code-fold: true
@@ -130,10 +130,9 @@ facet_wrap(. ~ decade, scales = "free_x") +
 
 ```
 
-#add writing. its more linear flat, as times goes on industrialized countrie start to pull aawy and there is apattern where the fertility decreasesa as their GDP increases
-
 From the visualization, we see how the relationship between GDP and fertility changes over each 50-year period. In the first frame (1800-1850), there is a flat and linear relationship; most countries have a fertility rate of 6 children, regardless of GDP. In the next frame, we still observe a linear, flat relationship, but countries are starting to have increased GDPs. In the third frame (1900 to 1950), we observe that industrialized countries start to pull away in GDP by almost double. A pattern starts to emerge where fertility decreases as GDP increases. This relationship is further supported in the fourth frame (1950-2000), where there is a more defined drop in fertility to 2 children, once the GDP hits $20,000. In the last frame (2000 to present), more countries hit the GDP of over $20,000, and the drastic drop in fertility to 2 children is further observed. Thus, from graphing the relationship between GDP and fertility rate (and freeing the x-axis), the data shows an inverse relationship over time; as GDP increases, fertility rate decreases exponentially. 
 
+Next, we investigate the overall relationship between average GDP and average fertility for all countries across all years, from 1800 to present. This is visualized in the following graphic.
 
 ```{r}
 #| code-fold: true
@@ -153,7 +152,7 @@ ggplot(aes(x = avg_gdp,
   
 ```
 
-In this graph, we can see that as average GDP increases, the average Fertility rate tends to decrease. We can also see that the majority of the countries have an average GDP under 10,000 and an average fertility rate above 4. There seems to be an evident negative relationship. However there may be some curvature indicating a negative exponential form. Additionally, the relationship is not very strong as the data points at increased average GDP values are more spread out.
+In this graph, we can see that as average GDP increases, the average Fertility rate tends to decrease. We can also see that the majority of the countries have an average GDP under $10,000 and an average fertility rate above 4 children per woman. There seems to be an evident negative relationship. However there may be some curvature indicating a negative exponential form rather than a true linear form. Additionally, the relationship is not very strong as the data points at increased average GDP values are more spread out.
 
 ## 2.2 Linear Regression
 
@@ -220,7 +219,7 @@ error_df|>
 This plot somewhat resembles a bell-curve. There are a few values that are unusually large, and they may be outliers. Nonetheless, we can conclude that the normality assumption is reasonably met.
 
 ### Equal Variance
-To assess the variance of our errors, we look at the following plot;
+To assess the variance of our errors, we look at the following plot:
 ```{r}
 #| code-fold: true
 model |>
@@ -292,7 +291,7 @@ From this graphic, we can see that our simulated data differs from our observed 
 
 ## 3.2 Generating Multiple Predictive Checks
 
-Next, we perform the same comparison as above 1000 times and report the proportion of variability explained in the observed data by our simulated data. Then, we can plot a distribution of this amount of variability explained across the 1000 simulations. This distribution is shown below.
+Next, we perform the same comparison as above 1000 times and report the proportion of variability explained in the observed data by our simulated data for each iteration. Then, we can plot a distribution of this amount of variability explained across the 1000 simulations. This distribution is shown below.
 
 ```{r}
 #| code-fold: true
@@ -313,8 +312,8 @@ sim_data <- avg_fertility_gdp |>
   select(avg_fertility, avg_gdp) |>
   bind_cols(sim_response)
 
-lm(avg_fertility ~ sim_fertility, data = sim_data) |>
-  glance()
+#lm(avg_fertility ~ sim_fertility, data = sim_data) |>
+ # glance()
 
 sim_r2 <- lm(avg_fertility ~sim_fertility, data = sim_data) |>
   glance() |>
@@ -351,8 +350,10 @@ tibble(sims = sims_r_squared) |>
   theme_bw()
 ```
 
-Ideally, we would want the center of the distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In the distribution we can see that the majorty of the $R^2$ values fall 0.125. This means that over the 1000 simulations, the majority of our generated data explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
+Ideally, we would want the center of the distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In the distribution we can see that the majority of the $R^2$ values fall around 0.125. This means that over the 1000 simulations, the majority of our generated data sets explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
 
-Ideally, we would want the center of our distribution to fall near 1. An $R^2$ value of 1 would indicate that our simulated data explains 100% of the variability in our observed data, meaning it is a perfect fit. In our distribution we can see that the majority of the $R^2$ values fall 0.125. This means that over the 1000 simulations, the majority of our generated data explained 12.5% of the variability in the observed data. This means that our model is not a great fit.
+# Conclusion
+To conclude, GDP and Fertility rate definitely have a negative association. GDP is also definitely a good predictor of fertility. However, using our proposed linear regression model to model this relationship is evidently not adequate, as our model does not perform considerably well, as identified in section 3.2. Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements (identified in section 2.2).
 
-Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements (identified in section 2.2).
+If we were to potentially include other variable in the model, add a transformation, or include higher order terms, our model may have performed better and been a better indicator of the average fertility rate in a given country.
+
