@@ -267,7 +267,7 @@ data_both <- data.frame(
 
 plot_pred <- ggplot(data = data_both, aes(x = avg_gdp)) +
 
-geom_point(aes(y = predicted_er), color = "darkseagreen3", shape=1) + 
+geom_point(aes(y = predicted_er), color = "darkseagreen3") + 
   labs(title = "Simulated Data",
        x = "Average GDP (2017 PPP$)",
        y = NULL,
@@ -276,7 +276,7 @@ geom_point(aes(y = predicted_er), color = "darkseagreen3", shape=1) +
 
 
 plot_obs <- ggplot(data = data_both, aes(x = avg_gdp)) +
-geom_point(aes(y = avg_fertility), color = "slateblue", shape=8) + 
+geom_point(aes(y = avg_fertility), color = "slateblue") + 
     labs(title = "Observed Data",
        x = "Average GDP (2017 PPP$)",
        y = NULL,
