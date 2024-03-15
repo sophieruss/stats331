@@ -191,7 +191,7 @@ variances <- data.frame(
 )
 
 variances |>
-knitr::kable(digits = 2)
+knitr::kable(digits = 2, col.names = gsub("[_]", " ", names(variances)))
 ```
 
 This table shows that about 0.414/1.179 = 0.351, or about 35.1% of the variability in the average fertility rate values was accounted for by our regression model. This is a somewhat low amount of variability being explained, as there is about 0.765/1.179 = 0.649, or about 64.9% of variability in the response still left unexplained by the model with only average GDP as the predictor.
