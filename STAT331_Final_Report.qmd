@@ -27,7 +27,9 @@ fertility <- read_csv("children.csv")
 gdp <- read_csv("gdp.csv")
 ```
 
-## Introduction: Describing Data
+# 1 Data
+
+## 1.1 Introduction: Describing Data
 
 We are interested in exploring the relationship between the two variables “GDP per capita” and “Total Fertility Rate”. We retrieved datasets on these two variables from Gapminder.org.
 
@@ -38,7 +40,7 @@ The dataset `children.csv` contains the number of babies per woman (Total Fertil
 We hypothesize that there will be a **negative** association between GDP per capita and Total Fertility Rate. Our explanatory variable will be GDP per capita and our response variable of interest will be Total Fertility Rate. Through internet research, we found that, in general, poor countries tend to have higher levels of fertility than rich countries ([Vandenbroucke](https://www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income)). We are interested in exploring and confirming (or refuting) this relationship in general and over time with the time series data that we have.
 
 
-## Cleaning Data
+## 1.2 Cleaning Data
 
 To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all NA values in both datasets. Then, we merged both datasets using an inner_join() to only contain observations that have values for both gdp and fertility.
 
