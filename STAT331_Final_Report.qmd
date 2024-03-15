@@ -14,7 +14,7 @@ execute:
   warning: false
 ---
 
-## Read in Data + Load Libraries
+### Read in Data + Load Libraries
 
 ```{r}
 #| code-fold: true
@@ -39,8 +39,12 @@ The dataset `children.csv` contains the number of babies per woman (Total Fertil
 
 We hypothesize that there will be a **negative** association between GDP per capita and Total Fertility Rate. Our explanatory variable will be GDP per capita and our response variable of interest will be Total Fertility Rate. Through internet research, we found that, in general, poor countries tend to have higher levels of fertility than rich countries ([Vandenbroucke](https://www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income)). We are interested in exploring and confirming (or refuting) this relationship in general and over time with the time series data that we have.
 
+<<<<<<< HEAD
+## Cleaning Data
+=======
 
 ## 1.2 Cleaning Data
+>>>>>>> 355b1b5fcf5d64b53423df3b256230cb40a72a40
 
 To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all missing values in both datasets. Then, we merged both datasets using an inner join to only contain observations that have values for both gdp and fertility.
 
@@ -126,8 +130,8 @@ ggplot(aes(x = avg_gdp,
        y = NULL,
        x = "Average GDP per Country") +
 facet_wrap(. ~ decade, scales = "free_x") +
-    theme_bw()
 
+theme_bw()
 ```
 
 From the visualization, we see how the relationship between GDP and fertility changes over each 50-year period. In the first frame (1800-1850), there is a flat and linear relationship; most countries have a fertility rate of 6 children, regardless of GDP. In the next frame, we still observe a linear, flat relationship, but countries are starting to have increased GDPs. In the third frame (1900 to 1950), we observe that industrialized countries start to pull away in GDP by almost double. A pattern starts to emerge where fertility decreases as GDP increases. This relationship is further supported in the fourth frame (1950-2000), where there is a more defined drop in fertility to 2 children, once the GDP hits $20,000. In the last frame (2000 to present), more countries hit the GDP of over $20,000, and the drastic drop in fertility to 2 children is further observed. Thus, from graphing the relationship between GDP and fertility rate (and freeing the x-axis), the data shows an inverse relationship over time; as GDP increases, fertility rate decreases exponentially. 
