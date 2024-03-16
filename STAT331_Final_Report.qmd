@@ -159,11 +159,6 @@ In this graph, we can see that as average GDP increases, the average Fertility r
 In this exploration, we will create a simple linear regression model to attempt to fit our data. Simple Linear regression assumes a linear relationship between the variables, average GDP and average Fertility rate, as well as normally distributed, independent errors with a mean of 0 and equal variance.
 
 After fitting the data, the estimated linear regression model is as follows:
-```{r}
-model <- lm(avg_fertility ~ avg_gdp, data = avg_fertility_gdp)
-summary(model)
-```
-
 
 ```{r}
 #| code-fold: true
@@ -179,7 +174,7 @@ tidy(model) |>
   knitr::kable()
 ```
 
-Estimated linear regression equation: $\widehat{Average Fertility}=5.98389-0.00012(AverageGDP)$
+From the table, the estimated linear regression equation is $\widehat{Average Fertility}=5.98389-0.00012(AverageGDP)$
 
 ### Coefficient Interpretations
 
@@ -207,19 +202,19 @@ This table shows that about 0.414/1.179 = 0.351, or about 35.1% of the variabili
 
 Considering how many factors influence Fertility rate overall, being able to explain 35.1% of its variability is somewhat impressive. Still, only looking at R-squared, our simple linear regression model with average GDP as the predictor is not ideal. The remaining variability could be explained with a more complex model that looks at other factors influencing Fertility rate.
 
-Next, we will analyze the Linear Regression assumptions.
+Next, we will assess the linear regression assumptions for our model.
 
-### Linearity Assumptions
+### Linearity Assumption
 
 From our plot of average GDP vs. average Fertility Rate in section 2.1, we can see that the data may not follow a linear relationship. The form of the observations seems to be more curved, and therefore the linearity assumption may be violated.
 
-### Independence Assumptions
+### Independence Assumption
 
 Since the response variable in our model is average fertility rate for every country, taken over time, we can assume that the observations are independent of one another. That is, the average fertility rate of one country does not influence that of another country. Thus, we can assume that the independence assumption is reasonably met for the model.
 
-### Normal Distribution of Errors
+### Normal Distribution of Errors Assumption
 
-To assess the distribution of our errors we look at the following plot
+To assess the distribution of our errors we look at the following plot of residuals.
 
 ```{r}
 #| code-fold: true
@@ -236,9 +231,9 @@ error_df|>
 
 This plot somewhat resembles a bell-curve. There are a few values that are unusually large, and they may be outliers. Nonetheless, we can conclude that the normality assumption is reasonably met.
 
-### Equal Variance
+### Equal Variance Assumption
 
-To assess the variance of our errors, we look at the following plot:
+To assess the variance of our errors, we look at the following plot.
 
 ```{r}
 #| code-fold: true
@@ -377,14 +372,14 @@ Ideally, we would want the center of the distribution to fall near 1. An $R^2$ v
 
 # Conclusion
 
-To conclude, through our exploration we confirmed that average GDP and average fertility rate have a negative association. GDP is also a statistically significant predictor of fertility rate, since the p-value for the slope coefficient of average GDP is very small (<0.001). However, using our proposed linear regression model to model this relationship is evidently not adequate, as our model does not perform considerably well, as identified in section 3.2. Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements as identified in section 2.2.
+To conclude, through our exploration we confirmed that average GDP and average fertility rate have a negative association. GDP is also a statistically significant predictor of fertility rate, since the p-value for the slope coefficient of average GDP is very small (\<0.001). However, using our proposed linear regression model to model this relationship is evidently not adequate, as our model does not perform considerably well, as identified in section 3.2. Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements, as identified in section 2.2.
 
 If we were to have included other variables in the model, transformed the variables, or included higher order terms our model may have performed better at predicting the average fertility rate in a given country. Future studies might also look into choosing a different modeling method than linear regression, such as logistic regression.
 
 ### References
 
-“Babies per Woman (Total Fertility Rate) | Gapminder.” Gapminder.org, 2021, www.gapminder.org/data/documentation/gd008/. Accessed 16 Mar. 2024.
+“Babies per Woman (Total Fertility Rate) \| Gapminder.” Gapminder.org, 2021, www.gapminder.org/data/documentation/gd008/. Accessed 16 Mar. 2024.
 
-“GDP per Capita in Constant PPP Dollars | Gapminder.” Gapminder.org, 2017, www.gapminder.org/data/documentation/gd001/. Accessed 16 Mar. 2024.
+“GDP per Capita in Constant PPP Dollars \| Gapminder.” Gapminder.org, 2017, www.gapminder.org/data/documentation/gd001/. Accessed 16 Mar. 2024.
 
 Vandenbroucke, Guillaume. “The Link between Fertility and Income.” Stlouisfed.org, Federal Reserve Bank of St. Louis, 13 Dec. 2016, www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income. Accessed 16 Mar. 2024.
