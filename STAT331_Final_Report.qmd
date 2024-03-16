@@ -42,7 +42,7 @@ We hypothesize that there will be a **negative** association between GDP per cap
 
 ## 1.2 Cleaning Data
 
-To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the `gdp.csv` dataset we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all missing values in both datasets. Then, we merged both datasets using an inner join to only contain observations that have values for both gdp and fertility.
+To prepare our data for analysis, we pivoted each dataset to long format to get the year to be a single column. We converted the `year` variable to numeric and filtered the data to only include years up to 2024. For the GDP per capita dataset, we had to convert all “k” values (i.e. "90k") to numeric and multiply by 1000. We also dropped all missing values in both datasets. Then, we merged both datasets using an inner join to only contain observations that have values for both gdp and fertility.
 
 ### Cleaning `fertility.csv`
 
@@ -380,3 +380,11 @@ Ideally, we would want the center of the distribution to fall near 1. An $R^2$ v
 To conclude, through our exploration we confirmed that average GDP and average fertility rate have a negative association. GDP is also a statistically significant predictor of fertility rate, since the p-value for the slope coefficient of average GDP is very small (<0.001). However, using our proposed linear regression model to model this relationship is evidently not adequate, as our model does not perform considerably well, as identified in section 3.2. Our linear regression being a poor model may have been expected, as the data does not meet all the linear regression requirements as identified in section 2.2.
 
 If we were to have included other variables in the model, transformed the variables, or included higher order terms our model may have performed better at predicting the average fertility rate in a given country. Future studies might also look into choosing a different modeling method than linear regression, such as logistic regression.
+
+### References
+
+“Babies per Woman (Total Fertility Rate) | Gapminder.” Gapminder.org, 2021, www.gapminder.org/data/documentation/gd008/. Accessed 16 Mar. 2024.
+
+“GDP per Capita in Constant PPP Dollars | Gapminder.” Gapminder.org, 2017, www.gapminder.org/data/documentation/gd001/. Accessed 16 Mar. 2024.
+
+Vandenbroucke, Guillaume. “The Link between Fertility and Income.” Stlouisfed.org, Federal Reserve Bank of St. Louis, 13 Dec. 2016, www.stlouisfed.org/on-the-economy/2016/december/link-fertility-income. Accessed 16 Mar. 2024.
