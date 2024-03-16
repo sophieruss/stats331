@@ -376,7 +376,7 @@ To conclude, through our exploration we confirmed that average GDP and average f
 
 If we were to have included other variables in the model, transformed the variables, or included higher order terms our model may have performed better at predicting the average fertility rate in a given country. Future studies might also look into choosing a different modeling method than linear regression, such as logistic regression.
 
-### References
+# References
 
 “Babies per Woman (Total Fertility Rate) \| Gapminder.” Gapminder.org, 2021, www.gapminder.org/data/documentation/gd008/. Accessed 16 Mar. 2024.
 
